@@ -1,4 +1,4 @@
-import { getAllAuthors, getAuthorById , postAuthor , updateAuthor , deleteAuthor } from '../models/authors.js';
+import { getAllAuthors, getAuthorById , postAuthor , updateAuthor , deleteAuthor , authorHasBooks} from '../models/authors.js';
 
 export const getAuthorsHandler = async (req, res) => {
     try {
@@ -71,9 +71,12 @@ export const deleteAuthorHandler = async (req, res) => {
         if (!authorExists) {
             return res.status(404).json({ message: 'Author not found' });
         }
+        if (await authorHasBooks(id)) {
+            return res.status(409).json({ message: 'Cannot delete author with associated books' });
+        }
         const deleteSuccess = await deleteAuthor(id);
         if (deleteSuccess) {
-            return res.status(200).json({ message: 'Author deleted successfully' });
+            return res.status(204).send();
         } else {
             return res.status(500).json({ message: 'Failed to delete author' });
         }
