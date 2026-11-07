@@ -27,3 +27,9 @@ export const deleteAuthor = async (authorId) => {
     const result = await db.collection('authors').deleteOne({ id: authorId });
     return result.deletedCount > 0;
 }
+
+export const authorHasBooks = async (authorId) => {
+    const db = getDb();
+    const book = await db.collection('books').findOne({ authorId: authorId });
+    return book !== null;
+}
